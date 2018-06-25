@@ -1,11 +1,12 @@
-if we don't know sometools how to install though yum 
+if we don't know sometools how to install though yum command,
 we can use yum provides to find out, such as , we want to install nslookup
 
-#yum list | grep nslookup
+> yum list | grep nslookup
 Repository epel is listed more than once in the configuration
 
 we got nothing , then 
-#yum provides nslookup
+
+> yum provides nslookup
 已加载插件：fastestmirror
 Repository epel is listed more than once in the configuration
 Loading mirror speeds from cached hostfile
@@ -18,8 +19,10 @@ Loading mirror speeds from cached hostfile
 匹配来源：
 文件名    ：/usr/bin/nslookup
 
-from infomations that yum provides printed , we know that nslookup belongs to bin-utils,
-then we know how to install nslookup commank
-#yum -y install bind-utils
+from infomations that yum provides printed , we know that nslookup belongs to bind-utils,
+then we know how to install nslookup command
+
+> yum -y install bind-utils
+
 everything is done !
 
