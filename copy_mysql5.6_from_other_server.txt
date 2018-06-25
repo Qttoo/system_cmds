@@ -1,0 +1,116 @@
+we already install mysql server and client in Server A(192.168.1.2) 
+if you want it to run in Server B and don't want to install it again in Server B 
+Then we can copy mysql from Server A to Server B(192.168.1.5)
+
+first of all excute  " ssh-copy-id 192.168.1.2 " in Server B, after this command , we can do the copy job more convenient
+we do the step follows in Server B 
+
+1. > rsync -avl 192.168.1.2:/usr/bin/my* /usr/bin
+#do not use mysql* include my* , because we need /usr/bin/my_print_defaults, and if you use mysql* , 
+#then my_print_defaults is missed
+
+2. > rsync -avl  192.168.1.2:/usr/share/mysql  /usr/share/
+#mind that there is no slash after "mysql" , because we want rsync to build the mysql directory automatically
+
+3. > rsync -avl 192.168.1.2:/etc/my.cnf  /etc/
+
+4. > rsync -avl 192.168.1.2:/usr/sbin/mysqld /usr/sbin/
+#if you notice that mysqld is not in the same directory with mysql , which is in /usr/bin
+#then you will not go the same detours that I have walkd through
+
+5. > rsync -alv 192.168.1.2:/usr/lib/systemd/system/mysqld.service  /usr/lib/systemd/system/
+#we want this file because we want to use command :  systemctl start/stop/restart mysqld 
+#what's inside mysqld.service is in the tail of this document
+
+6. > useradd mysql -s /sbin/nologin
+#create user "mysql"
+
+7. > mkdir /var/lib/mysql
+8. > mkdir /var/lib/mysql-files
+9. > touch /var/log/mysqld.log
+10. > chown mysql.mysql /var/lib/mysql
+11. > chown mysql.mysql /var/lib/mysql-files
+12. > chown mysql.mysql /var/log/mysqld.log
+13. > mkdir /var/run/mysqld/
+14. > chown mysql.mysql /var/run/mysqld/
+#/var/lib/mysql is the data dir of mysql that set in /etc/my.cnf , also mysqld.log 
+#/var/run/mysqld/ is for mysql.pid that set in /etc/my.cnf , if you make the different 
+
+13. > /usr/bin/mysql_install_db --basedir=/usr --defaults-file=/etc/my.cnf --user=mysql
+
+14. > systemctl daemon-reload
+#this step makes system know mysqld service we create in step 5
+
+15. > systemctl start mysqld 
+
+seems like that everything is in the right way , if somethins is wrong when you start mysqld daemon , 
+journalctl -xe is a very good command for you to find out what's the problem , 
+also the error log of mysql is very usefully , which could not be ignored.
+
+> cat /usr/lib/systemd/system/mysqld.service
+#
+# Simple MySQL systemd service file
+#
+# systemd supports lots of fancy features, look here (and linked docs) for a full list:
+#   http://www.freedesktop.org/software/systemd/man/systemd.exec.html
+#
+# Note: this file ( /usr/lib/systemd/system/mysql.service )
+# will be overwritten on package upgrade, please copy the file to
+#
+#  /etc/systemd/system/mysql.service
+#
+# to make needed changes.
+#
+# systemd-delta can be used to check differences between the two mysql.service files.
+#
+
+[Unit]
+Description=MySQL Community Server
+After=network.target
+After=syslog.target
+
+[Install]
+WantedBy=multi-user.target
+Alias=mysql.service
+
+[Service]
+User=mysql
+Group=mysql
+
+# Execute pre and post scripts as root
+PermissionsStartOnly=true
+
+# Needed to create system tables etc.
+ExecStartPre=/usr/bin/mysql-systemd-start pre
+
+# Start main service
+ExecStart=/usr/bin/mysqld_safe --basedir=/usr
+
+# Don't signal startup success before a ping works
+ExecStartPost=/usr/bin/mysql-systemd-start post
+
+# Give up if ping don't get an answer
+TimeoutSec=600
+
+Restart=always
+PrivateTmp=false
+
+> cat /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+sync_binlog = 1
+log-bin-trust-function-creators=1
+log_bin = mysql-bin
+symbolic-links=0
+
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+
+I do the test in :
+Mysql version : mysql  Ver 14.14 Distrib 5.6.40 
+Server version : CentOS Linux release 7.5.1804 (Core)
