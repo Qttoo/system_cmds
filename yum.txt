@@ -1,0 +1,25 @@
+if we don't know sometools how to install though yum 
+we can use yum provides to find out, such as , we want to install nslookup
+
+#yum list | grep nslookup
+Repository epel is listed more than once in the configuration
+
+we got nothing , then 
+#yum provides nslookup
+已加载插件：fastestmirror
+Repository epel is listed more than once in the configuration
+Loading mirror speeds from cached hostfile
+ * base: mirrors.aliyun.com
+ * epel: mirrors.aliyun.com
+ * extras: mirrors.163.com
+ * updates: mirrors.163.com
+32:bind-utils-9.9.4-61.el7.x86_64 : Utilities for querying DNS name servers
+源    ：base
+匹配来源：
+文件名    ：/usr/bin/nslookup
+
+from infomations that yum provides printed , we know that nslookup belongs to bin-utils,
+then we know how to install nslookup commank
+#yum -y install bind-utils
+everything is done !
+
