@@ -1,0 +1,88 @@
+Install and Configure NFS on Centos 7
+System version : CentOS Linux release 7.4.1708 (Core)
+
+We do the setting follows in the NSF Server :
+
+1. Install NFS service 
+yum -y nfs-utils  rpcbind
+
+2. Configure /etc/exports files
+vim /etc/exports 
+add folders you want to share and set IP and limits of authority, such as 
+/data/www/adom/photos/ 10.32.18.132(rw,sync,no_root_squash)
+/data/www/adom/videos/ 10.32.18.132(rw,sync,no_root_squash)
+
+This setting is just allow host 10.32.18.132 to mount ths share folders ,
+rw , read and write are allow
+sync , synchronous
+no_root_squash , when login as root , the user will have the authorities of root , 
+                 and it's authorities will be modified to nobody, this option is unsafe
+If NFS server had been started and we modified the file , just "exportfs -rv" to make it works
+"showmount -e Server_IP" in the NSF server to see the share folders and allow hosts
+[root@localhost ~]# showmount -e 10.32.18.131
+Export list for 10.32.18.131:
+/data/www/adom/videos 10.32.18.132
+/data/www/adom/photos 10.32.18.132
+
+
+3. Set services to enabled when start the system
+systemctl enable nfs-server.service
+systemctl enable rpcbind
+
+4. Start services 
+systemctl start nfs-server.service
+systemctl start rpcbind
+
+"systemctl status service_name" can be used to see the details of the servies's status 
+
+5. After start the services , we can see the ports , so we know how to set the firewalld
+[root@localhost fw]# rpcinfo -p
+[root@localhost fw]# rpcinfo -p
+   program vers proto   port  service
+    100000    4   tcp    111  portmapper
+    100000    3   tcp    111  portmapper
+    100000    2   tcp    111  portmapper
+    100000    4   udp    111  portmapper
+    100000    3   udp    111  portmapper
+    100000    2   udp    111  portmapper
+    100024    1   udp  39096  status
+    100024    1   tcp  54661  status
+    100005    1   udp  20048  mountd
+    100005    1   tcp  20048  mountd
+    100005    2   udp  20048  mountd
+    100005    2   tcp  20048  mountd
+    100005    3   udp  20048  mountd
+    100005    3   tcp  20048  mountd
+    100003    3   tcp   2049  nfs
+    100003    4   tcp   2049  nfs
+    100227    3   tcp   2049  nfs_acl
+    100003    3   udp   2049  nfs
+    100003    4   udp   2049  nfs
+    100227    3   udp   2049  nfs_acl
+
+6. Set the firewalld 
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="2049" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="2049" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="20048" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="20048" protocol="udp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="111" protocol="tcp" accept' --permanent
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="10.32.18.132" port port="111" protocol="udp" accept' --permanent
+firewall-cmd --reload
+
+7. mount NFS folders in the client Server :
+mount -t nfs 10.32.18.131:/data/www/adom/videos /data/www/adom/videos
+mount -t nfs 10.32.18.131:/data/www/adom/photos /data/www/adom/photos
+
+"df -Th " or mount " commands to the the mounted folders .
+[root@localhost ~]# df -Th
+文件系统                                   类型      容量  已用  可用 已用% 挂载点
+/dev/sda3                                  ext4      900G  114G  746G   14% /
+devtmpfs                                   devtmpfs  3.8G     0  3.8G    0% /dev
+tmpfs                                      tmpfs     3.8G     0  3.8G    0% /dev/shm
+tmpfs                                      tmpfs     3.8G  409M  3.4G   11% /run
+tmpfs                                      tmpfs     3.8G     0  3.8G    0% /sys/fs/cgroup
+/dev/sda6                                  ext4      3.9G   17M  3.7G    1% /tmp
+/dev/sda2                                  ext2      485M  136M  324M   30% /boot
+tmpfs                                      tmpfs     778M     0  778M    0% /run/user/0
+10.32.18.131:/data/www/adom/photos nfs4      909G  310G  553G   36% /data/www/adom/photos
+10.32.18.131:/data/www/adom/videos nfs4      909G  310G  553G   36% /data/www/adom/videos
