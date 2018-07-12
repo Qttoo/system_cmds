@@ -87,5 +87,5 @@ libzip-0.10.1-8.el7.x86_64.rpm  php-zetacomponents-base-1.9-2.el7.noarch.rpm
 
 As we can see clearly , the four packeges were downloaded in /tmp .
 
-
+yum install --download package_name , without --download-dir parameter is OK .
 
