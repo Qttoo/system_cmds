@@ -26,3 +26,66 @@ then we know how to install nslookup command
 
 everything is done !
 
+####################################################################
+If we want to download some package and do not install in this server , just run :
+
+>yum install --downloadonly --downloaddir=/tmp php-zetacomponents-base.noarch
+
+Then all the related packages will be down load 
+
+已加载插件：fastestmirror, langpacks
+Repository epel is listed more than once in the configuration
+Loading mirror speeds from cached hostfile
+正在解决依赖关系
+--> 正在检查事务
+---> 软件包 php-zetacomponents-base.noarch.0.1.9-2.el7 将被 安装
+--> 正在处理依赖关系 php(language) > 5.3，它被软件包 php-zetacomponents-base-1.9-2.el7.noarch 需要
+--> 正在处理依赖关系 php-spl，它被软件包 php-zetacomponents-base-1.9-2.el7.noarch 需要
+--> 正在处理依赖关系 php-simplexml，它被软件包 php-zetacomponents-base-1.9-2.el7.noarch 需要
+--> 正在处理依赖关系 php-posix，它被软件包 php-zetacomponents-base-1.9-2.el7.noarch 需要
+--> 正在处理依赖关系 php-pcre，它被软件包 php-zetacomponents-base-1.9-2.el7.noarch 需要
+--> 正在检查事务
+---> 软件包 php-common.x86_64.0.5.4.16-45.el7 将被 安装
+--> 正在处理依赖关系 libzip.so.2()(64bit)，它被软件包 php-common-5.4.16-45.el7.x86_64 需要
+---> 软件包 php-process.x86_64.0.5.4.16-45.el7 将被 安装
+--> 正在检查事务
+---> 软件包 libzip.x86_64.0.0.10.1-8.el7 将被 安装
+--> 解决依赖关系完成
+
+依赖关系解决
+
+===============================================================================================================================
+ Package                                  架构                    版本                             源                     大小
+===============================================================================================================================
+正在安装:
+ php-zetacomponents-base                  noarch                  1.9-2.el7                        epel                  229 k
+为依赖而安装:
+ libzip                                   x86_64                  0.10.1-8.el7                     os                     48 k
+ php-common                               x86_64                  5.4.16-45.el7                    os                    565 k
+ php-process                              x86_64                  5.4.16-45.el7                    os                     56 k
+
+事务概要
+===============================================================================================================================
+安装  1 软件包 (+3 依赖软件包)
+
+总下载量：898 k
+安装大小：4.4 M
+Background downloading packages, then exiting:
+(1/4): libzip-0.10.1-8.el7.x86_64.rpm                                                                   |  48 kB  00:00:00
+(2/4): php-process-5.4.16-45.el7.x86_64.rpm                                                             |  56 kB  00:00:00
+(3/4): php-common-5.4.16-45.el7.x86_64.rpm                                                              | 565 kB  00:00:00
+(4/4): php-zetacomponents-base-1.9-2.el7.noarch.rpm                                                     | 229 kB  00:00:00
+-------------------------------------------------------------------------------------------------------------------------------
+总计                                                                                           4.4 MB/s | 898 kB  00:00:00
+exiting because "Download Only" specified
+
+>ls /tmp
+[root@VM_12_203_centos ~]# ls /tmp/
+hsperfdata_root                 php-common-5.4.16-45.el7.x86_64.rpm           
+hsperfdata_tempuser             php-process-5.4.16-45.el7.x86_64.rpm          
+libzip-0.10.1-8.el7.x86_64.rpm  php-zetacomponents-base-1.9-2.el7.noarch.rpm
+
+As we can see clearly , the four packeges were downloaded in /tmp .
+
+
+
