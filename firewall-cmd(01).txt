@@ -2,9 +2,36 @@ firewalld常用命令
 
 firewalld启动/关闭/开机启用/开机禁用：
 systemctl start/stop/enable/disable firewalld
+
 执行上面的命令之前，可以用--state查看一下防火墙的状态
 firewall-cmd --state
 执行这条命令会返回running 或者not running
+
+用status参数也可以查看防火墙的状态，这个命令式输出的信息比较详细，如下
+>systemctl status firewalld
+● firewalld.service - firewalld - dynamic firewall daemon
+   Loaded: loaded (/usr/lib/systemd/system/firewalld.service; enabled; vendor preset: enabled)
+   Active: active (running) since 四 2018-08-09 22:23:08 CST; 3min 24s ago
+     Docs: man:firewalld(1)
+ Main PID: 23511 (firewalld)
+   CGroup: /system.slice/firewalld.service
+           └─23511 /usr/bin/python -Es /usr/sbin/firewalld --nofork --nopid
+
+8月 09 22:23:07 izbp1eczt2oz systemd[1]: Starting firewalld - dynamic firewall daemon...
+8月 09 22:23:08 izbp1ecztoz systemd[1]: Started firewalld - dynamic firewall daemon.
+
+
+如果我们查看到的防火墙状态是masked,这时候防火墙是启动不了的
+>systemctl status firewalld
+● firewalld.service
+   Loaded: masked (/dev/null; bad)
+   Active: inactive (dead) since 四 2018-08-09 22:30:20 CST; 30s ago
+ Main PID: 23511 (code=exited, status=0/SUCCESS)
+
+需要把防火墙的masked状态解除才行：
+>systemctl unmask firewalld
+>systemctl start firewalld
+
 
 1.查看所有防火墙规则
 firewall-cmd --list-all
