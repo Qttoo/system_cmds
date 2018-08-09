@@ -1,5 +1,11 @@
 firewalld常用命令
 
+firewalld启动/关闭/开机启用/开机禁用：
+systemctl start/stop/enable/disable firewalld
+执行上面的命令之前，可以用--state查看一下防火墙的状态
+firewall-cmd --state
+执行这条命令会返回running 或者not running
+
 1.查看所有防火墙规则
 firewall-cmd --list-all
 防火墙启动/关闭/查看状态：systemctl start/stop/statuss firewalld
