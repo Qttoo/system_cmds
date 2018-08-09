@@ -1,0 +1,52 @@
+firewalld常用命令
+
+1.查看所有防火墙规则
+firewall-cmd --list-all
+防火墙启动/关闭/查看状态：systemctl start/stop/statuss firewalld
+
+2.防火墙规则重载
+ firewall-cmd --reload
+ 修改防火墙的时候加了--permanent参数，或者修改了防火墙各种xml文件的内容之后，重载防火墙，规则才会生效
+ 
+3.移除防火墙服务
+firewall-cmd --remove-service=ssh
+firewall-cmd --remove-service=ssh --permanent
+ssh是服务名
+
+4.添加防火墙服务规则
+firewall-cmd --add-service=ssh
+firewall-cmd --add-service=ssh --permanent
+ssh是服务名，没有--permanent参数防火墙规则马上生效，执行firewall-cmd --reload之后，规则失效，有这个参数永久生效，
+此参数在下面的规则里作用是一样的
+注意，如果只执行了firewall-cmd --add-service=ssh --permanent这个命令，防火墙规则需要reload/restart才生效，reload之后永久生效
+如果我们想规则马上生效，而且永久生效，又不想reload防火墙，直接执行以上两条命令即可
+其他所有系统默认的服务都在这个目录/usr/lib/firewalld/services/ ，要添加什么服务可以ls命令查看，然后添加
+
+5.添加防火墙端口规则
+firewall-cmd --add-port=3306/tcp
+firewall-cmd --add-port=3306/tcp --permanent
+前面添加服务的例子，其实也是端口，只是配置成了服务，如果我们不想配置服务，直接添加端口效果是一样的
+3306是端口，tcp是端口使用的协议(大部分都是tcp)，这样添加是允许所有请求访问3306端口
+
+6.限定IP访问端口和服务
+firewall-cmd --add-rich-rule=' rule family="ipv4" source address="95.211.1.1" port port="3306" protocol="tcp" accept'
+firewall-cmd --add-rich-rule=' rule family="ipv4" source address="95.211.1.1" port port="3306" protocol="tcp" accept' --permanent
+
+这个规则限定了只允许 95.211.1.1这个主机访问本机的3306端口,这里执行两次是前一条规则马上生效，不行重载防火墙，加--permanent参数再执行一次
+以后重载或在重启防火墙，这条规则依然生效
+
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="95.211.1.1" service name=ssh accept'
+firewall-cmd --add-rich-rule='rule family="ipv4" source address="95.211.1.1" service name=ssh accept' --permanent
+这个规则限定了只允许 95.211.1。1这个主机访问本机的ssh服务
+要添加其他端口/服务，限定只允许某个机器连接，只需要把上面例子的端口/服务名字换掉，还有source address后面的IP换即可
+
+移除端口/服务的规则只需要把上面命令的add单词换成remove即可
+但是要注意，如果移除的时候没有--permanent参数，现在服务/端口是不可以正常访问的，防火墙reload/restart之后又可以正常访问
+所以，如果要现在移除服务/端口，并且要永久移除，需要把两条命令都执行一次
+firewall-cmd --remove-rich-rule='rule family="ipv4" source address="95.211.1.1" service name=ssh accept'
+firewall-cmd --remove-rich-rule='rule family="ipv4" source address="95.211.1.1" service name=ssh accept' --permanent
+
+
+
+
+
