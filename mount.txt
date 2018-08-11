@@ -86,3 +86,19 @@ tmpfs                                      tmpfs     3.8G     0  3.8G    0% /sys
 tmpfs                                      tmpfs     778M     0  778M    0% /run/user/0
 10.32.18.131:/data/www/adom/photos nfs4      909G  310G  553G   36% /data/www/adom/photos
 10.32.18.131:/data/www/adom/videos nfs4      909G  310G  553G   36% /data/www/adom/videos
+
+如果在一个客户端执行mount命令的时候，执行不了，确定服务器的服务，防火墙都配置好了
+[root@test classes]# mount -t nfs 3.4.1.4:/data/www/aom/photos /data/www/aom/photos
+mount: 文件系统类型错误、选项错误、37.48.110.204:/data/www/aom/photos 上有坏超级块、
+       缺少代码页或助手程序，或其他错误
+       (对某些文件系统(如 nfs、cifs) 您可能需要
+       一款 /sbin/mount.<类型> 助手程序)
+
+       有些情况下在 syslog 中可以找到一些有用信息- 请尝试
+       dmesg | tail  这样的命令看看。
+
+多半是客户端少了挂载需要的依赖包，安装启动一下，并且设置开机启动
+yum -y install nfs-utils
+systemctl start nfs-utils
+systemctl enable  nfs-utils
+
