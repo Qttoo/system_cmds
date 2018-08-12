@@ -36,7 +36,10 @@ we do the step follows in Server B
 #/var/lib/mysql is the data dir of mysql that set in /etc/my.cnf , also mysqld.log 
 #/var/run/mysqld/ is for mysql.pid that set in /etc/my.cnf , if you make the different 
 
+before we exec mysql_install_db , perl-Module is needed 
+>>yum install -y perl-Module-Install.noarch
 13. > /usr/bin/mysql_install_db --basedir=/usr --defaults-file=/etc/my.cnf --user=mysql
+
 
 14. > systemctl daemon-reload
 #this step makes system know mysqld service we create in step 5
