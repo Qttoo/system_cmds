@@ -4,7 +4,7 @@ System version : CentOS Linux release 7.4.1708 (Core)
 We do the setting follows in the NSF Server :
 
 1. Install NFS service 
-yum -y nfs-utils  rpcbind
+yum -y nfs-utils  rpcbind portmap
 
 2. Configure /etc/exports files
 vim /etc/exports 
