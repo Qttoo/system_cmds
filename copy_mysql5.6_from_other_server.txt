@@ -117,3 +117,10 @@ pid-file=/var/run/mysqld/mysqld.pid
 I do the test in :
 Mysql version : mysql  Ver 14.14 Distrib 5.6.40 
 Server version : CentOS Linux release 7.5.1804 (Core)
+
+**************************************************************
+mariadb 安装好如果修改了root密码不生效，或者修改不了密码，用下面的命令
+>UPDATE mysql.user SET authentication_string = PASSWORD('new-password'), plugin = 'mysql_native_password' WHERE User = 'root' AND Host = 'localhost';
+
+
+
