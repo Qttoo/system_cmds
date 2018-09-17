@@ -50,6 +50,29 @@ seems like that everything is in the right way , if somethins is wrong when you 
 journalctl -xe is a very good command for you to find out what's the problem , 
 also the error log of mysql is very usefully , which could not be ignored.
 
+#########################
+安装数据库的时候报错：
+/usr/bin/mysql_install_db --basedir=/usr --defaults-file=/etc/my.cnf --user=mysql --force
+Installing MySQL system tables...2018-09-17 03:29:50 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2018-09-17 03:29:50 0 [Note] Ignoring --secure-file-priv value as server is running with --bootstrap.
+2018-09-17 03:29:50 0 [Note] /usr/sbin/mysqld (mysqld 5.6.40-log) starting as process 9836 ...
+2018-09-17 03:29:50 9836 [ERROR] Can't read from messagefile '/usr/share/mysql/english/errmsg.sys'
+2018-09-17 03:29:50 9836 [Note] InnoDB: Using atomics to ref count buffer pool pages
+
+启动报错：
+2018-09-17 04:43:48 0 [Note] /usr/sbin/mysqld (mysqld 5.6.40-log) starting as process 29005 ...
+2018-09-17 04:43:48 29005 [ERROR] Can't read from messagefile '/usr/share/mysql/english/errmsg.sys'
+2018-09-17 04:43:48 29005 [Warning] Buffered warning: Changed limits: max_open_files: 1024 (requested 5010)
+
+2018-09-17 04:53:49 31202 [Note] Plugin 'FEDERATED' is disabled.
+/usr/sbin/mysqld: Table 'mysql.plugin' doesn't exist
+2018-09-17 04:53:49 31202 [ERROR] Can't open the mysql.plugin table. Please run mysql_upgrade to create it.
+2018-09-17 04:53:49 31202 [Note] InnoDB: Using atomics to ref count buffer pool pages
+
+上面两个错都是因为安装(初始化)数据库的时候，不知道为啥/var/lib/mysql/mysql下面什么文件都没有
+从别的机器把这个目录下面的文件全部同步过来即可
+
+**********************
 > cat /usr/lib/systemd/system/mysqld.service
 #
 # Simple MySQL systemd service file
